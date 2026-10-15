@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# generated datasets, embedding caches, trained runs
+data/
+runs/
+.cache/
+
+# third-party paper PDF: keep locally, do not redistribute
+docs/*.pdf

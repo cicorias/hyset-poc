@@ -1,0 +1,43 @@
+# Toolchain + task runner. Python deps are managed by uv inside ./.venv.
+[tools]
+python = "3.12"
+uv = "latest"
+
+[env]
+# mise creates (via uv) and auto-activates the project venv on `cd`.
+_.python.venv = { path = ".venv", create = true }
+# Make uv build the venv from mise's Python, never a uv-downloaded one.
+UV_PYTHON_PREFERENCE = "only-system"
+UV_PYTHON_DOWNLOADS = "never"
+
+[tasks.setup]
+description = "Create .venv and install the package with all extras + dev group"
+run = "uv sync --all-extras"
+
+[tasks.test]
+description = "Fast test suite (no model downloads, no LLM calls)"
+run = "uv run pytest"
+
+[tasks."test:all"]
+description = "Full test suite incl. slow (downloads sentence-transformers model)"
+run = "uv run pytest -m 'not llm'"
+
+[tasks.lint]
+description = "Ruff lint + format check"
+run = ["uv run ruff check src tests examples", "uv run ruff format --check src tests examples"]
+
+[tasks.fmt]
+description = "Auto-fix lint and format"
+run = ["uv run ruff check --fix src tests examples", "uv run ruff format src tests examples"]
+
+[tasks.demo]
+description = "End-to-end offline demo: synth data -> train -> eval -> retrieve"
+run = "uv run hyset demo"
+
+[tasks.serve]
+description = "HTTP service for the demo run"
+run = "uv run hyset serve runs/demo"
+
+[tasks.mcp]
+description = "MCP server (stdio) for the demo run"
+run = "uv run hyset mcp runs/demo"
